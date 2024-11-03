@@ -1,4 +1,4 @@
-
+# Ce fichier Python peut etre rendu executable avec pyinstaller si le serveur Wazuh n'a pas d'interpreteur Python3
 # Server Flask ouvert par defaut sur le port 5000
 # Permet de creer un webhook local ecrivant l'alerte transmise dans le fichier active-responses.log
 # TDWH 2023
