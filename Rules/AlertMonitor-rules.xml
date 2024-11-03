@@ -1,0 +1,22 @@
+<!-- TDWH Juillet 2023-->
+<group name="AlertMonitors,">
+  <!-- Ces regles detectent l'ecriture dans le fichier active-responses.log d'une notification via l'API Flask créée sur la machine Wazuh avec les criteres ci-dessous -->
+  <rule id="103000" level="11">
+    <if_sid>530</if_sid>
+    <match>^ossec: output: OpenSearchMonitor: </match>
+    <description>Notification OpenSearch Monitor</description>
+    <group>OpenSearch</group>
+  </rule>
+  <rule id="103001" level="11">
+    <if_sid>530</if_sid>
+    <match>^ossec: output: GraylogMonitor: </match>
+    <description>Notification Graylog Monitor</description>
+    <group>Graylog</group>
+  </rule>
+  <rule id="103002" level="11">
+    <if_sid>530</if_sid>
+    <match>^ossec: output: HostMonitor: </match>
+    <description>Notification Host Monitor</description>
+    <group>Host</group>
+  </rule>
+</group>
