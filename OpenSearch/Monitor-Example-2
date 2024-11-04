@@ -1,12 +1,12 @@
 {
-   "name": "MultipleAuthenticationFailuress-SeveralDestinationIPs",
+   "name": "MultipleAuthenticationFailuress-SeveraSourceIPs",
    "type": "monitor",
    "monitor_type": "query_level_monitor",
    "enabled": true,
    "schedule": {
       "period": {
          "unit": "MINUTES",
-         "interval": 5
+         "interval": 1
       }
    },
    "inputs": [
@@ -38,7 +38,7 @@
                         {
                            "range": {
                               "timestamp": {
-                                 "from": "now-5m",
+                                 "from": "now-1m",
                                  "to": "now",
                                  "include_lower": false,
                                  "include_upper": true,
@@ -53,9 +53,9 @@
                   }
                },
                "aggregations": {
-                  "list_dst_ips": {
+                  "list_src_ips": {
                      "terms": {
-                        "field": "data.dstip",
+                        "field": "data.srcip",
                         "size": 10,
                         "min_doc_count": 1,
                         "shard_min_doc_count": 0,
@@ -70,9 +70,9 @@
                         ]
                      }
                   },
-                  "nb_dst_ips": {
+                  "nb_src_ips": {
                      "cardinality": {
-                        "field": "data.dstip"
+                        "field": "data.srcip"
                      }
                   }
                }
@@ -84,11 +84,11 @@
       {
          "query_level_trigger": {
             "id": "88Ti5IgBauqq202KazCQ",
-            "name": "Echecs d'authentification avec differentes adresses de destination !",
+            "name": "Echecs d'authentification avec differentes adresses source",
             "severity": "1",
             "condition": {
                "script": {
-                  "source": "ctx.results[0].aggregations.nb_dst_ips.value >= 2",
+                  "source": "ctx.results[0].aggregations.nb_src_ips.value >= 2",
                   "lang": "painless"
                }
             },
@@ -98,7 +98,7 @@
                   "name": "Ecriture-ActiveResponses-Log-Wazuh",
                   "destination_id": "Epfj-JIBQvstuUwuoudW",
                   "message_template": {
-                     "source": "{{ctx.monitor.name}} Nombre IPs: {{ctx.results.0.aggregations.nb_dst_ips.value}}  Nombre total de blocages : {{ctx.results.0.hits.total.value}}  Nombre /  IPs Destination: {{#ctx.results.0.aggregations.list_dst_ips.buckets}}  {{doc_count}} / {{key}}  {{/ctx.results.0.aggregations.list_dst_ips.buckets}}",
+                     "source": "{{ctx.monitor.name}} Nombre IPs: {{ctx.results.0.aggregations.nb_src_ips.value}}  Nombre total de blocages : {{ctx.results.0.hits.total.value}}  Nombre /  IPs Destination: {{#ctx.results.0.aggregations.list_src_ips.buckets}}  {{doc_count}} / {{key}}  {{/ctx.results.0.aggregations.list_src_ips.buckets}}",
                      "lang": "mustache"
                   },
                   "throttle_enabled": false,
@@ -117,7 +117,7 @@
          "frequency": "interval",
          "period": {
             "unit": "MINUTES",
-            "interval": 5
+            "interval": 1
          },
          "daily": 0,
          "weekly": {
