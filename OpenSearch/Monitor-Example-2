@@ -1,5 +1,5 @@
 {
-   "name": "MultipleAuthenticationFailuress-SeveraSourceIPs",
+   "name": "MultipleAuthenticationFailuress-SeveralSourceIPs",
    "type": "monitor",
    "monitor_type": "query_level_monitor",
    "enabled": true,
