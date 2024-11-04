@@ -1,4 +1,5 @@
-# Ce fichier peut etre rendu executable avec pyinstaller si le serveur ne dispose pas d'interpreteur Python3
+# Ce fichier peut etre rendu executable avec pyinstaller si le serveur ne dispose pas d'interpreteur Python3 :
+# pyinstaller --onefile --add-binary "/usr/lib/x86_64-linux-gnu/libpython3.10.so:." Active-Response-Log.py
 # Server Flask ouvert par defaut sur le port 5000
 # Permet de creer un webhook local renseignant l'alerte transmise dans le fichier active-responses.log
 # Avec 2 routes : /opensearch-alerts et /graylog-alerts
