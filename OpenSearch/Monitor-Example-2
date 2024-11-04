@@ -1,5 +1,5 @@
 {
-   "name": "MultipleAuthFailures-SeveralUsers",
+   "name": "MultipleAuthenticationFailuress-SeveralDestinationIPs",
    "type": "monitor",
    "monitor_type": "query_level_monitor",
    "enabled": true,
@@ -53,23 +53,13 @@
                   }
                },
                "aggregations": {
-                  "unique_users": {
+                  "list_dst_ips": {
                      "terms": {
-                        "script": {
-                           "source": """
-                              def users = [];
-                              if (doc.containsKey('data.srcuser') && !doc['data.srcuser'].empty) {
-                                 users.add(doc['data.srcuser'].value);
-                              }
-                              if (doc.containsKey('data.dstuser') && !doc['data.dstuser'].empty) {
-                                 users.add(doc['data.dstuser'].value);
-                              }
-                              return users;
-                           """,
-                           "lang": "painless"
-                        },
+                        "field": "data.dstip",
                         "size": 10,
                         "min_doc_count": 1,
+                        "shard_min_doc_count": 0,
+                        "show_term_doc_count_error": false,
                         "order": [
                            {
                               "_count": "desc"
@@ -80,21 +70,9 @@
                         ]
                      }
                   },
-                  "nb_unique_users": {
+                  "nb_dst_ips": {
                      "cardinality": {
-                        "script": {
-                           "source": """
-                              def users = [];
-                              if (doc.containsKey('data.srcuser') && !doc['data.srcuser'].empty) {
-                                 users.add(doc['data.srcuser'].value);
-                              }
-                              if (doc.containsKey('data.dstuser') && !doc['data.dstuser'].empty) {
-                                 users.add(doc['data.dstuser'].value);
-                              }
-                              return users;
-                           """,
-                           "lang": "painless"
-                        }
+                        "field": "data.dstip"
                      }
                   }
                }
@@ -106,35 +84,21 @@
       {
          "query_level_trigger": {
             "id": "88Ti5IgBauqq202KazCQ",
-            "name": "Echecs d'authentification avec differentes sources et destinations !",
+            "name": "Echecs d'authentification avec differentes adresses de destination !",
             "severity": "1",
             "condition": {
                "script": {
-                  "source": "ctx.results[0].aggregations.nb_unique_users.value >= 3",
+                  "source": "ctx.results[0].aggregations.nb_dst_ips.value >= 2",
                   "lang": "painless"
                }
             },
             "actions": [
                {
-                  "id": "9MTi5IgBauqq202KazCQ",
-                  "name": "Notification Slack",
-                  "destination_id": "rMTd34gBauqq202Kpigs",
-                  "message_template": {
-                     "source": "Monitor {{ctx.monitor.name}} just entered alert status. Please investigate the issue.\n  - Trigger: {{ctx.trigger.name}}\n  - Severity: {{ctx.trigger.severity}}\n  - Period start: {{ctx.periodStart}}\n  - Period end: {{ctx.periodEnd}}\n  - Nombre d'utilisateurs uniques : {{ctx.results.0.aggregations.nb_unique_users.value}}\n  - Nombre total d'échecs : {{ctx.results.0.hits.total.value}}\n  - Nombre / Utilisateurs : {{#ctx.results.0.aggregations.unique_users.buckets}}  {{doc_count}} / {{key}}  {{/ctx.results.0.aggregations.unique_users.buckets}}",
-                     "lang": "mustache"
-                  },
-                  "throttle_enabled": false,
-                  "subject_template": {
-                     "source": "Alerte Echecs d'authentification avec differentes sources et destinations",
-                     "lang": "mustache"
-                  }
-               },
-               {
                   "id": "8ctmWokBtKfYQ5oh794L",
                   "name": "Ecriture-ActiveResponses-Log-Wazuh",
-                  "destination_id": "Yj1lVYkBNX_w3idwqJOf",
+                  "destination_id": "Epfj-JIBQvstuUwuoudW",
                   "message_template": {
-                     "source": "{{ctx.monitor.name}} Nombre d'utilisateurs uniques : {{ctx.results.0.aggregations.nb_unique_users.value}}  Nombre total d'échecs : {{ctx.results.0.hits.total.value}}  Nombre / Utilisateurs : {{#ctx.results.0.aggregations.unique_users.buckets}}  {{doc_count}} / {{key}}  {{/ctx.results.0.aggregations.unique_users.buckets}}",
+                     "source": "{{ctx.monitor.name}} Nombre IPs: {{ctx.results.0.aggregations.nb_dst_ips.value}}  Nombre total de blocages : {{ctx.results.0.hits.total.value}}  Nombre /  IPs Destination: {{#ctx.results.0.aggregations.list_dst_ips.buckets}}  {{doc_count}} / {{key}}  {{/ctx.results.0.aggregations.list_dst_ips.buckets}}",
                      "lang": "mustache"
                   },
                   "throttle_enabled": false,
