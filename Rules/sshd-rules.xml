@@ -8,7 +8,7 @@
 
 <group name="syslog,sshd,">
 
-  <rule id="25712" level="10" frequency="3" timeframe="20" ignore="30">
+  <rule id="25710" level="10" frequency="3" timeframe="20" ignore="30">
     <if_matched_sid>5710</if_matched_sid>
     <same_srcuser/>
     <description>sshd: Tentative d'attaque par force brute sur utilisateur inconnu $(srcuser).</description>
@@ -18,10 +18,10 @@
     <group>authentication_failures,gdpr_IV_35.7.d,gdpr_IV_32.2,hipaa_164.312.b,nist_800_53_SI.4,nist_800_53_AU.14,nist_800_53_AC.7,pci_dss_11.4,pci_dss_10.2.4,pci_dss_10.2.5,tsc_CC6.1,tsc_CC6.8,tsc_CC7.2,tsc_CC7.3,</group>
   </rule>
   
-  <rule id="25763" level="10" frequency="3" timeframe="20" ignore="30">
+  <rule id="25760" level="10" frequency="3" timeframe="20" ignore="30">
     <if_matched_sid>5760</if_matched_sid>
-    <same_srcuser/>
-    <description>sshd: Tentative d'attaque par force brute sur l'utilisateur $(srcuser).</description>
+    <same_user/>
+    <description>sshd: Tentative d'attaque par force brute sur l'utilisateur $(dstuser).</description>
     <mitre>
       <id>T1110</id>
     </mitre>
