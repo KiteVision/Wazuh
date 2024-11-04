@@ -1,0 +1,185 @@
+{
+   "name": "MultipleAuthFailures-SeveralUsers",
+   "type": "monitor",
+   "monitor_type": "query_level_monitor",
+   "enabled": true,
+   "schedule": {
+      "period": {
+         "unit": "MINUTES",
+         "interval": 5
+      }
+   },
+   "inputs": [
+      {
+         "search": {
+            "indices": [
+               "wazuh-alerts*"
+            ],
+            "query": {
+               "size": 0,
+               "query": {
+                  "bool": {
+                     "filter": [
+                        {
+                           "match_all": {
+                              "boost": 1
+                           }
+                        },
+                        {
+                           "match_phrase": {
+                              "rule.groups": {
+                                 "query": "multiple_authentication_failures",
+                                 "slop": 0,
+                                 "zero_terms_query": "NONE",
+                                 "boost": 1
+                              }
+                           }
+                        },
+                        {
+                           "range": {
+                              "timestamp": {
+                                 "from": "now-5m",
+                                 "to": "now",
+                                 "include_lower": false,
+                                 "include_upper": true,
+                                 "format": "strict_date_optional_time",
+                                 "boost": 1
+                              }
+                           }
+                        }
+                     ],
+                     "adjust_pure_negative": true,
+                     "boost": 1
+                  }
+               },
+               "aggregations": {
+                  "unique_users": {
+                     "terms": {
+                        "script": {
+                           "source": """
+                              def users = [];
+                              if (doc.containsKey('data.srcuser') && !doc['data.srcuser'].empty) {
+                                 users.add(doc['data.srcuser'].value);
+                              }
+                              if (doc.containsKey('data.dstuser') && !doc['data.dstuser'].empty) {
+                                 users.add(doc['data.dstuser'].value);
+                              }
+                              return users;
+                           """,
+                           "lang": "painless"
+                        },
+                        "size": 10,
+                        "min_doc_count": 1,
+                        "order": [
+                           {
+                              "_count": "desc"
+                           },
+                           {
+                              "_key": "asc"
+                           }
+                        ]
+                     }
+                  },
+                  "nb_unique_users": {
+                     "cardinality": {
+                        "script": {
+                           "source": """
+                              def users = [];
+                              if (doc.containsKey('data.srcuser') && !doc['data.srcuser'].empty) {
+                                 users.add(doc['data.srcuser'].value);
+                              }
+                              if (doc.containsKey('data.dstuser') && !doc['data.dstuser'].empty) {
+                                 users.add(doc['data.dstuser'].value);
+                              }
+                              return users;
+                           """,
+                           "lang": "painless"
+                        }
+                     }
+                  }
+               }
+            }
+         }
+      }
+   ],
+   "triggers": [
+      {
+         "query_level_trigger": {
+            "id": "88Ti5IgBauqq202KazCQ",
+            "name": "Echecs d'authentification avec differentes sources et destinations !",
+            "severity": "1",
+            "condition": {
+               "script": {
+                  "source": "ctx.results[0].aggregations.nb_unique_users.value >= 3",
+                  "lang": "painless"
+               }
+            },
+            "actions": [
+               {
+                  "id": "9MTi5IgBauqq202KazCQ",
+                  "name": "Notification Slack",
+                  "destination_id": "rMTd34gBauqq202Kpigs",
+                  "message_template": {
+                     "source": "Monitor {{ctx.monitor.name}} just entered alert status. Please investigate the issue.\n  - Trigger: {{ctx.trigger.name}}\n  - Severity: {{ctx.trigger.severity}}\n  - Period start: {{ctx.periodStart}}\n  - Period end: {{ctx.periodEnd}}\n  - Nombre d'utilisateurs uniques : {{ctx.results.0.aggregations.nb_unique_users.value}}\n  - Nombre total d'échecs : {{ctx.results.0.hits.total.value}}\n  - Nombre / Utilisateurs : {{#ctx.results.0.aggregations.unique_users.buckets}}  {{doc_count}} / {{key}}  {{/ctx.results.0.aggregations.unique_users.buckets}}",
+                     "lang": "mustache"
+                  },
+                  "throttle_enabled": false,
+                  "subject_template": {
+                     "source": "Alerte Echecs d'authentification avec differentes sources et destinations",
+                     "lang": "mustache"
+                  }
+               },
+               {
+                  "id": "8ctmWokBtKfYQ5oh794L",
+                  "name": "Ecriture-ActiveResponses-Log-Wazuh",
+                  "destination_id": "Yj1lVYkBNX_w3idwqJOf",
+                  "message_template": {
+                     "source": "{{ctx.monitor.name}} Nombre d'utilisateurs uniques : {{ctx.results.0.aggregations.nb_unique_users.value}}  Nombre total d'échecs : {{ctx.results.0.hits.total.value}}  Nombre / Utilisateurs : {{#ctx.results.0.aggregations.unique_users.buckets}}  {{doc_count}} / {{key}}  {{/ctx.results.0.aggregations.unique_users.buckets}}",
+                     "lang": "mustache"
+                  },
+                  "throttle_enabled": false,
+                  "subject_template": {
+                     "source": "",
+                     "lang": "mustache"
+                  }
+               }
+            ]
+         }
+      }
+   ],
+   "ui_metadata": {
+      "schedule": {
+         "timezone": null,
+         "frequency": "interval",
+         "period": {
+            "unit": "MINUTES",
+            "interval": 5
+         },
+         "daily": 0,
+         "weekly": {
+            "tue": false,
+            "wed": false,
+            "thur": false,
+            "sat": false,
+            "fri": false,
+            "mon": false,
+            "sun": false
+         },
+         "monthly": {
+            "type": "day",
+            "day": 1
+         },
+         "cronExpression": "0 */1 * * *"
+      },
+      "monitor_type": "query_level_monitor",
+      "search": {
+         "searchType": "query",
+         "timeField": "",
+         "aggregations": [],
+         "groupBy": [],
+         "bucketValue": 1,
+         "bucketUnitOfTime": "h",
+         "filters": []
+      }
+   }
+}
