@@ -1,4 +1,4 @@
-Quelques scripts utiles  :
+Quelques scripts utiles, associés à l'article https://www.kitevision.fr/detection-devenements-avec-wazuh/
 
 - Pour adapter les decodeurs et regles pfSense aux formats des logs pfSense actuels
 - Pour adapter le decodeur Suricata et permettre de tester une active response avec le champ 'srcip'
