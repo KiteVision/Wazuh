@@ -3,7 +3,7 @@ Pour exploitation des syslogs pfsense / version >= 2023.
 -->
 
 <!-- PFSENSE 2.6
-2024 Nov 01 11:32:03 (PFsense-London.dudes.lan) any->/var/log/filter.log <134>1 2024-11-01T11:32:02.552121+01:00 PFsense-London.dudes.lan filterlog 71043 - - 105,,,1663704475,vtnet1,match,block,in,4,0x0,,128,45052,0,none,17,udp,161,192.168.1.10,192.168.1.255,17500,17500,141
+2024 Nov 01 11:32:03 (PFsense-London.dudes.lan) any->/var/log/filter.log <134>1 2024-11-01T11:32:02.552121+01:00 pfSense-London.dudes.lan filterlog 71043 - - 105,,,1663704475,vtnet1,match,block,in,4,0x0,,128,45052,0,none,17,udp,161,192.168.1.10,192.168.1.255,17500,17500,141
 -->
 
 <!-- identifier les Logs venant d'un Firewall PfSense -->
