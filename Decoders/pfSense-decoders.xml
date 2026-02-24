@@ -8,7 +8,7 @@ Pour exploitation des syslogs pfsense / version >= 2023.
 
 <!-- identifier les Logs venant d'un Firewall PfSense -->
 <decoder name="pf-Firewall">
-  <prematch type="pcre2">pf.*filterlog</prematch>
+  <prematch type="pcre2">.*filterlog</prematch>
 </decoder>
 
 <!-- recuperer les champs venant d'un Firewall PfSense -->
