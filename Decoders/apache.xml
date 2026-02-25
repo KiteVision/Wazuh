@@ -1,5 +1,0 @@
-<decoder name="apache24-errorlog-user">
-  <parent>apache-errorlog</parent>
-  <regex type="pcre2">.*?user (.*?) authentication failure </regex>
-  <order>user</order>
-</decoder>
